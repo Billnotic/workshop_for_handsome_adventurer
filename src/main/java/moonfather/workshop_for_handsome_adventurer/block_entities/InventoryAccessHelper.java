@@ -28,6 +28,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.ComponentItemHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 
 import java.util.LinkedList;
@@ -36,28 +37,35 @@ public class InventoryAccessHelper
 {
     private void resolveBlockContainer(BlockEntity be, Player player, BlockPos pos, Level level)
     {
-        this.chosenContainer = null;      this.chestPrimaryPos = null;     this.chosenContainerTrueSize = 0;      this.currentType = "";  this.chosenContainerVisibleSize = 27;    this.chosenContainerForRename = null;
-        if (be == null) {
+        this.chosenContainer = null; this.chestPrimaryPos = null; this.chosenContainerTrueSize = 0;
+        this.currentType = ""; this.chosenContainerVisibleSize = 27; this.chosenContainerForRename = null;
+        if (be == null)
+        {
             return;
         }
-        if (be instanceof ChestBlockEntity cbe && cbe.getContainerSize() <= 54) {
-            if (ChestBlock.isChestBlockedAt(level, pos)) {
+        if (be instanceof ChestBlockEntity cbe && cbe.getContainerSize() <= 54)
+        {
+            if (ChestBlock.isChestBlockedAt(level, pos))
+            {
                 return;
             }
             this.chosenContainerTrueSize = cbe.getContainerSize(); // we'll deal with double chests below
             this.chosenContainerVisibleSize = cbe.getContainerSize() <= 27 ? 27 : 54;
             this.currentType = RecordTypes.BLOCK;
             DoubleBlockCombiner.BlockType type = ChestBlock.getBlockType(be.getBlockState());
-            if (type == DoubleBlockCombiner.BlockType.SINGLE) {
+            if (type == DoubleBlockCombiner.BlockType.SINGLE)
+            {
                 this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper((Container) be);
                 this.chosenContainerForRename = be;
             }
-            if (type == DoubleBlockCombiner.BlockType.FIRST) {
+            if (type == DoubleBlockCombiner.BlockType.FIRST)
+            {
                 BlockPos pos2 = pos.relative(ChestBlock.getConnectedDirection(be.getBlockState()));
                 BlockEntity be2 = level.getBlockEntity(pos2);
                 if (be2 instanceof ChestBlockEntity && be2.getBlockState().getValue(ChestBlock.TYPE) != be.getBlockState().getValue(ChestBlock.TYPE))
                 {
-                    if (ChestBlock.isChestBlockedAt(level, pos2)) {
+                    if (ChestBlock.isChestBlockedAt(level, pos2))
+                    {
                         return;
                     }
                     Container result = new CompoundContainer((Container) be, (Container) be2);
@@ -65,16 +73,20 @@ public class InventoryAccessHelper
                     this.chosenContainerTrueSize = result.getContainerSize();
                     this.chosenContainerVisibleSize = result.getContainerSize() <= 27 ? 27 : 54;
                     this.chosenContainerForRename = be;
-                } else {
+                }
+                else
+                {
                     return;
                 }
             }
-            if (type == DoubleBlockCombiner.BlockType.SECOND) {
+            if (type == DoubleBlockCombiner.BlockType.SECOND)
+            {
                 BlockPos pos2 = pos.relative(ChestBlock.getConnectedDirection(be.getBlockState()));
                 BlockEntity be2 = level.getBlockEntity(pos2);
                 if (be2 instanceof ChestBlockEntity && be2.getBlockState().getValue(ChestBlock.TYPE) != be.getBlockState().getValue(ChestBlock.TYPE))
                 {
-                    if (ChestBlock.isChestBlockedAt(level, pos2)) {
+                    if (ChestBlock.isChestBlockedAt(level, pos2))
+                    {
                         return;
                     }
                     Container result = new CompoundContainer((Container) be2, (Container) be);
@@ -83,14 +95,18 @@ public class InventoryAccessHelper
                     this.chosenContainerVisibleSize = result.getContainerSize() <= 27 ? 27 : 54;
                     this.chosenContainerForRename = be2;
                     this.chestPrimaryPos = pos2;
-                } else {
+                }
+                else
+                {
                     return;
                 }
             }
             return;
         }
-        if (be instanceof Container container && container.getContainerSize() <= 54) {
-            if (be instanceof ShulkerBoxBlockEntity && ! canOpenShulkerBox(level, be.getBlockState(), pos)) {
+        if (be instanceof Container container && container.getContainerSize() <= 54)
+        {
+            if (be instanceof ShulkerBoxBlockEntity && !canOpenShulkerBox(level, be.getBlockState(), pos))
+            {
                 return;
             }
             this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper(container);
@@ -100,11 +116,13 @@ public class InventoryAccessHelper
             this.currentType = RecordTypes.BLOCK;
             return;
         }
-        if (be instanceof EnderChestBlockEntity) {
-            if (ChestBlock.isChestBlockedAt(level, pos)) {
+        if (be instanceof EnderChestBlockEntity)
+        {
+            if (ChestBlock.isChestBlockedAt(level, pos))
+            {
                 return;
             }
-            this.chosenContainer =  new SimpleTableMenu.VariableSizeContainerWrapper(player.getEnderChestInventory());
+            this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper(player.getEnderChestInventory());
             this.chosenContainerTrueSize = 27;
             this.chosenContainerVisibleSize = 27;
             this.currentType = RecordTypes.BLOCK;
@@ -125,8 +143,11 @@ public class InventoryAccessHelper
             //    return;
             //}
         }
+        if (be.getBlockState().getBlock().getDescriptionId().contains("functionalstorage"))
+        {
+            // support for storage drawers is killed as there is a nasty duplication issue and i have no strength now.
+        }
         // IItemHandler capability
-
         IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, (Direction) null);
         if (handler == null)
         {
@@ -146,7 +167,8 @@ public class InventoryAccessHelper
         }
     }
 
-    private static boolean canOpenShulkerBox(Level level, BlockState blockState, BlockPos pos) {
+    private static boolean canOpenShulkerBox(Level level, BlockState blockState, BlockPos pos)
+    {
         AABB aabb = Shulker.getProgressDeltaAabb(1.0F, blockState.getValue(DirectionalBlock.FACING), 0.0F, 0.5F).move(pos).deflate(1.0E-6D);
         return level.noCollision(aabb);
     }
@@ -173,16 +195,20 @@ public class InventoryAccessHelper
         }
         this.loadNonBlockInventories(level, player);
         this.sort(pos, posSecondary);
-        while (this.adjacentInventories.size() > SimpleTableMenu.TAB_SMUGGLING_SOFT_LIMIT) {
+        while (this.adjacentInventories.size() > SimpleTableMenu.TAB_SMUGGLING_SOFT_LIMIT)
+        {
             this.adjacentInventories.removeLast();
         }
     }
 
-    private void loadNonBlockInventories(Level level, Player player) {
+    private void loadNonBlockInventories(Level level, Player player)
+    {
         Object beltSearch = TetraBeltSupport.findToolbelt(player);
-        if (TetraBeltSupport.hasToolbelt(beltSearch)) {
+        if (TetraBeltSupport.hasToolbelt(beltSearch))
+        {
             int size = TetraBeltSupport.getToolbeltStorage(beltSearch).getContainerSize();
-            if (size > 0) {
+            if (size > 0)
+            {
                 InventoryAccessRecord record = new InventoryAccessRecord();
                 record.ItemChest = TetraBeltSupport.getToolbeltIcon(beltSearch);
                 record.Nameable = true;
@@ -194,8 +220,9 @@ public class InventoryAccessHelper
                 this.adjacentInventories.add(record);
             }
         }
-        // storage inside items (tinker's plate leggings)
-        for (int slot = 0; slot < RecordTypes.NAMED_SLOTS.length; slot++) {
+        // storage inside items (tinker's plate leggings) - old style capabilities
+        for (int slot = 0; slot < RecordTypes.NAMED_SLOTS.length; slot++)
+        {
             String slotName = RecordTypes.NAMED_SLOTS[slot];
             ItemStack maybeStorageItem = getItemFromNamedSlot(player, slotName);
 
@@ -213,10 +240,7 @@ public class InventoryAccessHelper
                 this.adjacentInventories.add(record);
             }
         }
-        // traveller's backpack. not sure why i support this.
-        if (ModList.get().isLoaded("travelersbackpack"))
-        {
-        }
+        // todo: does the thing above work for ComponentItemHandler ?
     }
 
     private void loadAdjacentInventoriesCore(Level level, BlockPos pos, Player player, int range)
@@ -232,7 +256,7 @@ public class InventoryAccessHelper
             {
                 for (int dz = -range; dz <= range; dz++)
                 {
-                    if (! this.isInRange(dx, dz, range))
+                    if (!this.isInRange(dx, dz, range))
                     {
                         continue;
                     }
@@ -241,26 +265,31 @@ public class InventoryAccessHelper
                     this.resolveBlockContainer(be, player, pos2, level);
                     if (this.chosenContainer != null)
                     {
-                        if (be instanceof net.minecraft.world.level.block.entity.BaseContainerBlockEntity bcbe && ! bcbe.canOpen(player))
+                        if (be instanceof net.minecraft.world.level.block.entity.BaseContainerBlockEntity bcbe && !bcbe.canOpen(player))
                         {
                             continue; //locked
                         }
                         InventoryAccessRecord record = new InventoryAccessRecord();
                         record.ItemChest = be.getBlockState().getBlock().asItem().getDefaultInstance();
-                        if (record.ItemChest.isEmpty()) {
+                        if (record.ItemChest.isEmpty())
+                        {
                             record.ItemChest = be.getBlockState().getCloneItemStack(new BlockHitResult(pos2.getCenter(), Direction.UP, pos2, false), level, pos2, player);
                             record.Name = record.ItemChest.getHoverName();
-                            if (record.ItemChest.isEmpty()) {
+                            if (record.ItemChest.isEmpty())
+                            {
                                 record.ItemChest = Items.BARREL.getDefaultInstance();
                                 record.Name = be.getBlockState().getBlock().getName();
                             }
                         }
-                        if (record.Name == null)   {
-                            if (this.chosenContainerForRename instanceof net.minecraft.world.level.block.entity.BaseContainerBlockEntity bcbe) {
+                        if (record.Name == null)
+                        {
+                            if (this.chosenContainerForRename instanceof net.minecraft.world.level.block.entity.BaseContainerBlockEntity bcbe)
+                            {
                                 record.Name = bcbe.getName();  // Nameable interface doesn't have a set method so i'd have to check for ToolboxBlockEntity and every other separately... doable but meh.
                                 record.Nameable = true;
                             }
-                            else {
+                            else
+                            {
                                 record.Name = record.ItemChest.getHoverName();
                                 record.Nameable = false;
                             }
@@ -270,7 +299,8 @@ public class InventoryAccessHelper
                         record.VisibleSlotCount = this.chosenContainerVisibleSize;
                         if (this.chestPrimaryPos != null)
                         {
-                            record.x = this.chestPrimaryPos.getX(); record.y = this.chestPrimaryPos.getY(); record.z = this.chestPrimaryPos.getZ();
+                            record.x = this.chestPrimaryPos.getX(); record.y = this.chestPrimaryPos.getY();
+                            record.z = this.chestPrimaryPos.getZ();
                         }
                         record.ItemFirst = this.chosenContainer.getItem(0);
                         record.Index = this.adjacentInventories.size();
@@ -284,7 +314,10 @@ public class InventoryAccessHelper
 
     private boolean isInRange(int dx, int dz, int range)
     {
-        if (dx == 0 && dz == 0) return false;
+        if (dx == 0 && dz == 0)
+        {
+            return false;
+        }
         return Math.abs(dx) + Math.abs(dz) <= range;
     }
 
@@ -308,42 +341,57 @@ public class InventoryAccessHelper
             InventoryAccessHelper.InventoryAccessRecord current = this.adjacentInventories.get(i);
             ItemStack chest = current.ItemChest.copy();
             chest.set(DataComponents.CUSTOM_NAME, current.Name);
-            if (current.VisibleSlotCount > 27) { chest.setCount(2); }
-            if (! current.Nameable) { chest.setCount(chest.getCount() | 4); }
+            if (current.VisibleSlotCount > 27)
+            {
+                chest.setCount(2);
+            }
+            if (!current.Nameable)
+            {
+                chest.setCount(chest.getCount() | 4);
+            }
             ItemStack suff = current.ItemFirst.copy();
-            tabElements.setItem(i*2, chest);
-            tabElements.setItem(i*2+1, suff);
+            tabElements.setItem(i * 2, chest);
+            tabElements.setItem(i * 2 + 1, suff);
         }
-        for (int i = max * 2; i < tabElements.getContainerSize(); i++) {
-            if (! tabElements.getItem(i).isEmpty()) {
+        for (int i = max * 2; i < tabElements.getContainerSize(); i++)
+        {
+            if (!tabElements.getItem(i).isEmpty())
+            {
                 tabElements.setItem(i, ItemStack.EMPTY);
             }
         }
     }
 
 
-    public boolean tryInitializeInventoryAccess(Level level, Player player, int index) {
-        this.chosenContainerTrueSize = 0;   this.chosenContainer = null;
+    public boolean tryInitializeInventoryAccess(Level level, Player player, int index)
+    {
+        this.chosenContainerTrueSize = 0; this.chosenContainer = null;
         if (this.adjacentInventories == null || this.adjacentInventories.size() <= index)
         {
             return false;
         }
         InventoryAccessHelper.InventoryAccessRecord record = this.adjacentInventories.get(index);
-        if (record.Type.equals(RecordTypes.BLOCK)) {
+        if (record.Type.equals(RecordTypes.BLOCK))
+        {
             BlockPos pos = new BlockPos(record.x, record.y, record.z);
             BlockEntity be = level.getBlockEntity(pos);
             resolveBlockContainer(be, player, pos, level);
             return this.chosenContainer != null;
         }
-        else if (record.Type.equals(RecordTypes.TOOLBELT)) {
+        else if (record.Type.equals(RecordTypes.TOOLBELT))
+        {
             Container belt = TetraBeltSupport.getToolbeltStorage(player);
-            if (belt == null) { return false; }
+            if (belt == null)
+            {
+                return false;
+            }
             this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper(new TetraBeltTranslator(belt));
             this.chosenContainerTrueSize = belt.getContainerSize() / TetraBeltTranslator.GetRowWidth(belt) * 9;
             this.currentType = RecordTypes.TOOLBELT;
             return true;
         }
-        else if (record.Type.equals(RecordTypes.LEGGINGS) || record.Type.equals(RecordTypes.CHESTSLOT) || record.Type.equals(RecordTypes.BACKSLOT)) {
+        else if (record.Type.equals(RecordTypes.LEGGINGS) || record.Type.equals(RecordTypes.CHESTSLOT) || record.Type.equals(RecordTypes.BACKSLOT))
+        {
             ItemStack item = getItemFromNamedSlot(player, record.Type);
             IItemHandler itemHandler = item.getCapability(Capabilities.ItemHandler.ITEM, null);
             if (itemHandler != null)
@@ -359,45 +407,62 @@ public class InventoryAccessHelper
             // traveller's backpack. this should be in an addon.
             return false;
         }
-        else {
+        else
+        {
             return false;
         }
     }
 
-    public static ItemStack getItemFromNamedSlot(Player player, String slot) {
+    public static ItemStack getItemFromNamedSlot(Player player, String slot)
+    {
         if (slot.equals(RecordTypes.LEGGINGS))
+        {
             return player.getInventory().getArmor(1);
+        }
         else if (slot.equals(RecordTypes.CHESTSLOT))
+        {
             return player.getInventory().getArmor(2);
+        }
         else if (slot.equals(RecordTypes.BACKSLOT) && ModList.get().isLoaded("curios"))
+        {
             return CuriosAccessor.getFirstItem(player, "back");
+        }
         else
+        {
             return ItemStack.EMPTY;
+        }
     }
 
     ///////////////////////////////////////////////////////
 
-    private void sort(BlockPos pos, BlockPos posSecondary) {
+    private void sort(BlockPos pos, BlockPos posSecondary)
+    {
         InventoryAccessRecord left, right;
-        for (int i = 0; i < this.adjacentInventories.size()-1; i++) {
-            for (int k = i + 1; k < this.adjacentInventories.size(); k++) {
+        for (int i = 0; i < this.adjacentInventories.size() - 1; i++)
+        {
+            for (int k = i + 1; k < this.adjacentInventories.size(); k++)
+            {
                 left = this.adjacentInventories.get(i);
                 right = this.adjacentInventories.get(k);
                 if (left.Type.equals(RecordTypes.BLOCK) && right.Type.equals(RecordTypes.BLOCK)
-                       && left.x == right.x && left.y == right.y && left.z == right.z)
+                        && left.x == right.x && left.y == right.y && left.z == right.z)
                 {   // same location? remove.
                     this.adjacentInventories.remove(k);
                     k--;
                 }
             }
         }
-        for (int i = 0; i < this.adjacentInventories.size()-1; i++) {
-            for (int k = i+1; k < this.adjacentInventories.size(); k++) {
+        for (int i = 0; i < this.adjacentInventories.size() - 1; i++)
+        {
+            for (int k = i + 1; k < this.adjacentInventories.size(); k++)
+            {
                 left = this.adjacentInventories.get(i);
                 right = this.adjacentInventories.get(k);
-                if (right.Type.equals(RecordTypes.BLOCK) || left.Type.equals(RecordTypes.BLOCK)) {
+                if (right.Type.equals(RecordTypes.BLOCK) || left.Type.equals(RecordTypes.BLOCK))
+                {
                     // either is belt?
-                    if (right.Type.equals(RecordTypes.BLOCK) && !left.Type.equals(RecordTypes.BLOCK)) {
+                    if (right.Type.equals(RecordTypes.BLOCK) && !left.Type.equals(RecordTypes.BLOCK))
+                    {
                         // block entities first. swap.
                         this.adjacentInventories.set(i, right);
                         this.adjacentInventories.set(k, left);
@@ -410,26 +475,38 @@ public class InventoryAccessHelper
                     this.adjacentInventories.set(k, left);
                     continue;
                 }
-                if (posSecondary != null && left.y == right.y) {
-                    if (pos.getX() == posSecondary.getX() && pos.getZ() < posSecondary.getZ()) {
-                        if (left.z > right.z) {
+                if (posSecondary != null && left.y == right.y)
+                {
+                    if (pos.getX() == posSecondary.getX() && pos.getZ() < posSecondary.getZ())
+                    {
+                        if (left.z > right.z)
+                        {
                             this.adjacentInventories.set(i, right);
                             this.adjacentInventories.set(k, left);
                         }
-                    } else if (pos.getX() == posSecondary.getX() && pos.getZ() > posSecondary.getZ()) {
-                        if (left.z < right.z) {
+                    }
+                    else if (pos.getX() == posSecondary.getX() && pos.getZ() > posSecondary.getZ())
+                    {
+                        if (left.z < right.z)
+                        {
                             this.adjacentInventories.set(i, right);
                             this.adjacentInventories.set(k, left);
                         }
-                    } else if (pos.getZ() == posSecondary.getZ() && pos.getX() < posSecondary.getX()) {
+                    }
+                    else if (pos.getZ() == posSecondary.getZ() && pos.getX() < posSecondary.getX())
+                    {
                         // player facing north, table facing south. sort.
-                        if (left.x > right.x) {
+                        if (left.x > right.x)
+                        {
                             this.adjacentInventories.set(i, right);
                             this.adjacentInventories.set(k, left);
                         }
-                    } else if (pos.getZ() == posSecondary.getZ() && pos.getX() > posSecondary.getX()) {
+                    }
+                    else if (pos.getZ() == posSecondary.getZ() && pos.getX() > posSecondary.getX())
+                    {
                         // player facing south, table facing north. sort.
-                        if (left.x < right.x) {
+                        if (left.x < right.x)
+                        {
                             this.adjacentInventories.set(i, right);
                             this.adjacentInventories.set(k, left);
                         }
@@ -460,6 +537,6 @@ public class InventoryAccessHelper
         public static final String CHESTSLOT = "chest_item";
         public static final String BACKSLOT = "back_item";
         public static final String FLOATING = "floating";
-        public static final String[] NAMED_SLOTS = { LEGGINGS, CHESTSLOT, BACKSLOT };
+        public static final String[] NAMED_SLOTS = {LEGGINGS, CHESTSLOT, BACKSLOT};
     }
 }
