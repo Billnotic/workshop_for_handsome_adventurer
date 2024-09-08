@@ -2,6 +2,7 @@ package moonfather.workshop_for_handsome_adventurer.block_entities;
 
 import moonfather.workshop_for_handsome_adventurer.block_entities.container_translators.TetraBeltTranslator;
 import moonfather.workshop_for_handsome_adventurer.blocks.AdvancedTableBottomPrimary;
+import moonfather.workshop_for_handsome_adventurer.integration.BackpackedBackpack;
 import moonfather.workshop_for_handsome_adventurer.integration.CuriosAccessor;
 import moonfather.workshop_for_handsome_adventurer.integration.TetraBeltSupport;
 import moonfather.workshop_for_handsome_adventurer.integration.TravelersBackpack;
@@ -195,6 +196,26 @@ public class InventoryAccessHelper
         for (int slot = 0; slot < RecordTypes.NAMED_SLOTS.length; slot++) {
             String slotName = RecordTypes.NAMED_SLOTS[slot];
             ItemStack maybeStorageItem = getItemFromNamedSlot(player, slotName);
+            if (maybeStorageItem.isEmpty()) { continue; }
+            // mrcrayfish backpack
+            if (ModList.get().isLoaded("backpacked"))
+            {
+                Object backpackToken = BackpackedBackpack.getToken(maybeStorageItem);
+                if (BackpackedBackpack.isPresent(backpackToken) && BackpackedBackpack.slotCount(backpackToken) <= 54 && ! BackpackedBackpack.getTabIcon(backpackToken).isEmpty())
+                {
+                    InventoryAccessRecord record = new InventoryAccessRecord();
+                    record.ItemChest = BackpackedBackpack.getTabIcon(backpackToken);
+                    record.Nameable = true;
+                    record.Name = record.ItemChest.getHoverName();
+                    record.Type = slotName;
+                    record.VisibleSlotCount = BackpackedBackpack.slotCount(backpackToken) <= 27 ? 27 : 54;
+                    record.ItemFirst = BackpackedBackpack.getFirst(backpackToken);
+                    record.Index = this.adjacentInventories.size();
+                    this.adjacentInventories.add(record);
+                    continue;
+                }
+            }
+            // capability. this should catch most backpacks
             LazyOptional<IItemHandler> pockets = maybeStorageItem.getCapability(ForgeCapabilities.ITEM_HANDLER);
             pockets.ifPresent(inventory -> {
                 InventoryAccessRecord record = new InventoryAccessRecord();
@@ -353,12 +374,25 @@ public class InventoryAccessHelper
         }
         else if (record.Type.equals(RecordTypes.LEGGINGS) || record.Type.equals(RecordTypes.CHESTSLOT) || record.Type.equals(RecordTypes.BACKSLOT)) {
             ItemStack item = getItemFromNamedSlot(player, record.Type);
+            if (item.isEmpty()) { return false; }
+            // item handler capability
             LazyOptional<IItemHandler> pockets = item.getCapability(ForgeCapabilities.ITEM_HANDLER);
             pockets.ifPresent(inventory -> {
                 this.chosenContainer = new SimpleTableMenu.VariableSizeItemStackHandlerWrapper(inventory);
                 this.chosenContainerTrueSize = inventory.getSlots();
                 this.currentType = record.Type;
             });
+            // mr crayfish
+            if (this.chosenContainerTrueSize == 0 && ModList.get().isLoaded("backpacked"))
+            {
+                Object backpackToken = BackpackedBackpack.getToken(item);
+                if (BackpackedBackpack.isPresent(backpackToken) && BackpackedBackpack.slotCount(backpackToken) <= 54)
+                {
+                    this.chosenContainer = BackpackedBackpack.getContainer(backpackToken, player, item);
+                    this.chosenContainerTrueSize = BackpackedBackpack.slotCount(backpackToken);
+                    this.currentType = record.Type;
+                }
+            }
             return this.chosenContainerTrueSize > 0;
         }
         else if (record.Type.equals(RecordTypes.FLOATING))

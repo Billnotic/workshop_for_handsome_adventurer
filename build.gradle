@@ -153,7 +153,7 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
-	maven {
+    maven {
         url "https://cursemaven.com"
         content {
             includeGroup "curse.maven"
@@ -174,7 +174,7 @@ dependencies {
     // The group id is ignored when searching -- in this case, it is "blank"
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
 
-	compileOnly fg.deobf("curse.maven:jei-238222:4585879")
+    compileOnly fg.deobf("curse.maven:jei-238222:4585879")
     compileOnly fg.deobf("curse.maven:jade-324717:4573193")
     implementation fg.deobf("curse.maven:the-one-probe-245211:4629624")
 
@@ -189,22 +189,24 @@ dependencies {
     compileOnly fg.deobf("curse.maven:crafting-tweaks-233071:4757229")
 
     compileOnly fg.deobf("curse.maven:dynamic-asset-generator-577096:4670363")       //!//
-	//runtimeOnly fg.deobf("curse.maven:biomes-o-plenty-220318:4617259")
-	runtimeOnly fg.deobf("curse.maven:terrablender-563928:4647094")
+    //runtimeOnly fg.deobf("curse.maven:biomes-o-plenty-220318:4617259")
+    runtimeOnly fg.deobf("curse.maven:terrablender-563928:4647094")
     runtimeOnly fg.deobf("curse.maven:regions-unexplored-659110:4779426")
     //runtimeOnly fg.deobf("curse.maven:growthcraft-community-edition-235092:4844338")
 
     compileOnly fg.deobf("curse.maven:roughly-enough-items-310111:4774395") //implementation
-	runtimeOnly fg.deobf("curse.maven:architectury-api-419699:4663010")
+    runtimeOnly fg.deobf("curse.maven:architectury-api-419699:4663010")
     compileOnly fg.deobf("curse.maven:cloth-config-348521:4633444")  //implementation
-	
-	implementation fg.deobf("maven.modrinth:emi:ShejnJfY")  //compileOnly
-    implementation fg.deobf("maven.modrinth:curios:opCpnbhi")
+    
+    implementation fg.deobf("maven.modrinth:emi:ShejnJfY")  //compileOnly
+    compileOnly fg.deobf("maven.modrinth:curios:opCpnbhi")
+    runtimeOnly fg.deobf("maven.modrinth:curios:opCpnbhi")
+    //implementation fg.deobf("curse.maven:ohmega-889368:5653082")
 
     compileOnly fg.deobf("maven.modrinth:travelersbackpack:xocqrLoW")
 
     implementation fg.deobf("curse.maven:tetra-289712:4857842")
-	runtimeOnly fg.deobf("curse.maven:mutil-351914:4824501")
+    runtimeOnly fg.deobf("curse.maven:mutil-351914:4824501")
     runtimeOnly fg.deobf("curse.maven:tetra-tables-looking-neat-954341:5225383")
 
     //runtimeOnly fg.deobf("curse.maven:lets-do-herbal-brews-951221:4994262")
@@ -220,6 +222,11 @@ dependencies {
     //!//runtimeOnly fg.deobf("curse.maven:every-compat-628539:5038746")
 
     compileOnly fg.deobf("curse.maven:polymorph-388800:5222033")
+
+    runtimeOnly fg.deobf("curse.maven:framework-549225:4718251")
+    implementation fg.deobf("curse.maven:backpacked-352835:4725669")
+    implementation fg.deobf("curse.maven:storage-drawers-223852:5648796")
+    implementation fg.deobf("curse.maven:inventory-tweaks-refoxed-976858:5315928")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
