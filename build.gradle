@@ -200,8 +200,8 @@ dependencies {
     
     implementation fg.deobf("maven.modrinth:emi:ShejnJfY")  //compileOnly
     compileOnly fg.deobf("maven.modrinth:curios:opCpnbhi")
-    runtimeOnly fg.deobf("maven.modrinth:curios:opCpnbhi")
-    //implementation fg.deobf("curse.maven:ohmega-889368:5653082")
+    //runtimeOnly fg.deobf("maven.modrinth:curios:opCpnbhi")
+
 
     compileOnly fg.deobf("maven.modrinth:travelersbackpack:xocqrLoW")
 
@@ -227,6 +227,12 @@ dependencies {
     implementation fg.deobf("curse.maven:backpacked-352835:4725669")
     implementation fg.deobf("curse.maven:storage-drawers-223852:5648796")
     implementation fg.deobf("curse.maven:inventory-tweaks-refoxed-976858:5315928")
+}
+
+mixin {
+    // MixinGradle Settings
+    add sourceSets.main, 'mixins.workshop_incompatibilities.refmap.json'
+    config 'mixins.workshop_incompatibilities.json'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

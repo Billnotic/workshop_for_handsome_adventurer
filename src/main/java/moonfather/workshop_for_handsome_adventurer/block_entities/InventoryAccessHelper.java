@@ -2,10 +2,7 @@ package moonfather.workshop_for_handsome_adventurer.block_entities;
 
 import moonfather.workshop_for_handsome_adventurer.block_entities.container_translators.TetraBeltTranslator;
 import moonfather.workshop_for_handsome_adventurer.blocks.AdvancedTableBottomPrimary;
-import moonfather.workshop_for_handsome_adventurer.integration.BackpackedBackpack;
-import moonfather.workshop_for_handsome_adventurer.integration.CuriosAccessor;
-import moonfather.workshop_for_handsome_adventurer.integration.TetraBeltSupport;
-import moonfather.workshop_for_handsome_adventurer.integration.TravelersBackpack;
+import moonfather.workshop_for_handsome_adventurer.integration.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
