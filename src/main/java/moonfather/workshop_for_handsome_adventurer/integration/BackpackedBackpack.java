@@ -1,64 +1,47 @@
 package moonfather.workshop_for_handsome_adventurer.integration;
 
-import com.mrcrayfish.backpacked.inventory.BackpackInventory;
 import com.mrcrayfish.backpacked.inventory.BackpackedInventoryAccess;
-import com.mrcrayfish.backpacked.item.BackpackItem;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
-
-import java.lang.reflect.Field;
+import net.minecraft.world.item.Items;
 
 public class BackpackedBackpack
 {
     private BackpackedBackpack()
     {
     }
-    private int slotCountReal, slotCountVisible, slotRows, slotColumns;
-    private ItemStack tabIcon;
-
-    ////////////////////////////////////////////
-
-    public static Object getToken(ItemStack storageItem)
-    {
-        if (! (storageItem.getItem() instanceof BackpackItem bi))
-        {
-            return null;
-        }
-        BackpackedBackpack result = new BackpackedBackpack();
-        result.slotRows = bi.getRowCount();
-        result.slotColumns = bi.getColumnCount();
-        result.slotCountReal = bi.getColumnCount() * bi.getRowCount();
-        result.slotCountVisible = result.slotCountReal <= 27 ? 27 : 54;
-        result.tabIcon = storageItem.copy();
-        result.tabIcon.getOrCreateTag().remove("Items");
-        return result;
-    }
 
     //////////////////////////////////////
 
-    public static boolean isPresent(Object token)
+    public static boolean isPresent(Player player)
     {
-        return token != null;
+        return player instanceof BackpackedInventoryAccess access && access.getBackpackedInventory() != null;
     }
 
-    public static int slotCount(Object token)
+    public static int slotCount(Player player)
     {
-        return ((BackpackedBackpack) token).slotCountReal;
+        return player instanceof BackpackedInventoryAccess access ? access.getBackpackedInventory().getContainerSize() : 0;
     }
 
-    public static ItemStack getTabIcon(Object token)
+    public static ItemStack getTabIcon(Player player)
     {
-        return ((BackpackedBackpack) token).tabIcon;
+        ItemStack result = getContainerItem(player).copy();
+        result.getOrCreateTag().remove("Items");
+        return result;
     }
 
-    public static ItemStack getFirst(Object token)
+    public static ItemStack getContainerItem(Player player)
     {
-        return ItemStack.EMPTY;
+        return player instanceof BackpackedInventoryAccess access ? access.getBackpackedInventory().getBackpackStack() : Items.DEAD_BUSH.getDefaultInstance();
     }
 
-    public static Container getContainer(Object token, Player player, ItemStack item)
+    public static ItemStack getFirst(Player player)
+    {
+        return ItemStack.EMPTY; // can obtain but i don't want to
+    }
+
+    public static Container getContainer(Player player)
     {
         return ((BackpackedInventoryAccess) player).getBackpackedInventory();
     }

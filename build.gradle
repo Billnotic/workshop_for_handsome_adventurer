@@ -226,7 +226,7 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:framework-549225:4718251")
     implementation fg.deobf("curse.maven:backpacked-352835:4725669")
     implementation fg.deobf("curse.maven:storage-drawers-223852:5648796")
-    implementation fg.deobf("curse.maven:inventory-tweaks-refoxed-976858:5315928")
+    compileOnly fg.deobf("curse.maven:inventory-tweaks-refoxed-976858:5315928")
 }
 
 mixin {

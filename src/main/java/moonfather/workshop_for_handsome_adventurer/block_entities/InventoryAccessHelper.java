@@ -186,6 +186,7 @@ public class InventoryAccessHelper
                 record.VisibleSlotCount = (size / 8 * 9) <= 27 ? 27 : 54;
                 record.ItemFirst = TetraBeltSupport.getToolbeltStorageFirst(beltSearch);
                 record.Index = this.adjacentInventories.size();
+                record.ModId = "tetra";
                 this.adjacentInventories.add(record);
             }
         }
@@ -194,24 +195,6 @@ public class InventoryAccessHelper
             String slotName = RecordTypes.NAMED_SLOTS[slot];
             ItemStack maybeStorageItem = getItemFromNamedSlot(player, slotName);
             if (maybeStorageItem.isEmpty()) { continue; }
-            // mrcrayfish backpack
-            if (ModList.get().isLoaded("backpacked"))
-            {
-                Object backpackToken = BackpackedBackpack.getToken(maybeStorageItem);
-                if (BackpackedBackpack.isPresent(backpackToken) && BackpackedBackpack.slotCount(backpackToken) <= 54 && ! BackpackedBackpack.getTabIcon(backpackToken).isEmpty())
-                {
-                    InventoryAccessRecord record = new InventoryAccessRecord();
-                    record.ItemChest = BackpackedBackpack.getTabIcon(backpackToken);
-                    record.Nameable = true;
-                    record.Name = record.ItemChest.getHoverName();
-                    record.Type = slotName;
-                    record.VisibleSlotCount = BackpackedBackpack.slotCount(backpackToken) <= 27 ? 27 : 54;
-                    record.ItemFirst = BackpackedBackpack.getFirst(backpackToken);
-                    record.Index = this.adjacentInventories.size();
-                    this.adjacentInventories.add(record);
-                    continue;
-                }
-            }
             // capability. this should catch most backpacks
             LazyOptional<IItemHandler> pockets = maybeStorageItem.getCapability(ForgeCapabilities.ITEM_HANDLER);
             pockets.ifPresent(inventory -> {
@@ -223,10 +206,11 @@ public class InventoryAccessHelper
                 record.VisibleSlotCount = inventory.getSlots() <= 27 ? 27 : 54;
                 record.ItemFirst = ItemStack.EMPTY;
                 record.Index = this.adjacentInventories.size();
+                record.ModId = "";
                 this.adjacentInventories.add(record);
             } );
         }
-        // traveller's backpack. not sure why i support this.
+        // traveler's backpack. not sure why i support this.
         if (ModList.get().isLoaded("travelersbackpack"))
         {
             TravelersBackpack backpack = TravelersBackpack.getInstance(player);
@@ -240,6 +224,24 @@ public class InventoryAccessHelper
                 record.VisibleSlotCount = backpack.slotCount() <= 27 ? 27 : 54;
                 record.ItemFirst = backpack.getFirst();
                 record.Index = this.adjacentInventories.size();
+                record.ModId = "travelersbackpack";
+                this.adjacentInventories.add(record);
+            }
+        }
+        // mr crayfish' backpack
+        if (ModList.get().isLoaded("backpacked"))
+        {
+            if (BackpackedBackpack.isPresent(player) && BackpackedBackpack.slotCount(player) <= 54)
+            {
+                InventoryAccessRecord record = new InventoryAccessRecord();
+                record.ItemChest = BackpackedBackpack.getTabIcon(player);
+                record.Nameable = true;
+                record.Name = record.ItemChest.getHoverName();
+                record.Type = RecordTypes.FLOATING;
+                record.VisibleSlotCount = BackpackedBackpack.slotCount(player) <= 27 ? 27 : 54;
+                record.ItemFirst = BackpackedBackpack.getFirst(player);
+                record.Index = this.adjacentInventories.size();
+                record.ModId = "backpacked";
                 this.adjacentInventories.add(record);
             }
         }
@@ -272,6 +274,7 @@ public class InventoryAccessHelper
                             continue; //locked
                         }
                         InventoryAccessRecord record = new InventoryAccessRecord();
+                        record.ModId = "";
                         record.ItemChest = be.getBlockState().getBlock().asItem().getDefaultInstance();
                         if (record.ItemChest.isEmpty()) {
                             record.ItemChest = be.getBlockState().getCloneItemStack(new BlockHitResult(pos2.getCenter(), Direction.UP, pos2, false), level, pos2, player);
@@ -320,6 +323,7 @@ public class InventoryAccessHelper
     public int chosenContainerTrueSize = 0, chosenContainerVisibleSize = 0;
     private BlockPos chestPrimaryPos;
     public BlockEntity chosenContainerForRename = null;
+    public ItemStack chosenContainerItem = null; // for rename
 
 
     public void putInventoriesIntoAContainerForTransferToClient(Container tabElements, int max)
@@ -350,6 +354,7 @@ public class InventoryAccessHelper
 
     public boolean tryInitializeInventoryAccess(Level level, Player player, int index) {
         this.chosenContainerTrueSize = 0;   this.chosenContainer = null;
+        this.chosenContainerItem = null;
         if (this.adjacentInventories == null || this.adjacentInventories.size() <= index)
         {
             return false;
@@ -366,6 +371,7 @@ public class InventoryAccessHelper
             if (belt == null) { return false; }
             this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper(new TetraBeltTranslator(belt));
             this.chosenContainerTrueSize = belt.getContainerSize() / TetraBeltTranslator.GetRowWidth(belt) * 9;
+            this.chosenContainerItem = (ItemStack) TetraBeltSupport.findToolbelt(player);
             this.currentType = RecordTypes.TOOLBELT;
             return true;
         }
@@ -377,32 +383,35 @@ public class InventoryAccessHelper
             pockets.ifPresent(inventory -> {
                 this.chosenContainer = new SimpleTableMenu.VariableSizeItemStackHandlerWrapper(inventory);
                 this.chosenContainerTrueSize = inventory.getSlots();
+                this.chosenContainerItem = item;
                 this.currentType = record.Type;
             });
-            // mr crayfish
-            if (this.chosenContainerTrueSize == 0 && ModList.get().isLoaded("backpacked"))
-            {
-                Object backpackToken = BackpackedBackpack.getToken(item);
-                if (BackpackedBackpack.isPresent(backpackToken) && BackpackedBackpack.slotCount(backpackToken) <= 54)
-                {
-                    this.chosenContainer = BackpackedBackpack.getContainer(backpackToken, player, item);
-                    this.chosenContainerTrueSize = BackpackedBackpack.slotCount(backpackToken);
-                    this.currentType = record.Type;
-                }
-            }
             return this.chosenContainerTrueSize > 0;
         }
         else if (record.Type.equals(RecordTypes.FLOATING))
         {
             // traveller's backpack. not sure why i support this.
-            if (ModList.get().isLoaded("travelersbackpack"))     // add other containers attached to player here
+            if (ModList.get().isLoaded("travelersbackpack") && record.ModId.equals("travelersbackpack"))     // add other containers attached to player here
             {
                 TravelersBackpack backpack = TravelersBackpack.getInstance(player);
                 if (backpack.isPresent() && backpack.slotCount() <= 54 && ! backpack.getTabIcon().isEmpty())
                 {
                     this.chosenContainer = new SimpleTableMenu.VariableSizeItemStackHandlerWrapper(backpack.getItems());
                     this.chosenContainerTrueSize = backpack.slotCount();
+                    this.chosenContainerItem = backpack.getContainerItem();
                     this.currentType = RecordTypes.FLOATING;
+                    return true;
+                }
+            }
+            // mr crayfish's backpack. 
+            if (ModList.get().isLoaded("backpacked") && record.ModId.equals("backpacked"))
+            {
+                if (BackpackedBackpack.isPresent(player))
+                {
+                    this.chosenContainer = BackpackedBackpack.getContainer(player);
+                    this.chosenContainerTrueSize = BackpackedBackpack.slotCount(player);
+                    this.chosenContainerItem = BackpackedBackpack.getContainerItem(player);
+                    this.currentType = record.Type;
                     return true;
                 }
             }
@@ -499,6 +508,7 @@ public class InventoryAccessHelper
         public boolean Nameable = false;
         public String Type = "";
         public int VisibleSlotCount = 3;
+        public String ModId = "";
     }
 
     static class RecordTypes

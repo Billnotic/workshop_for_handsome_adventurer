@@ -53,6 +53,17 @@ public class TravelersBackpack
         return result.get();
     }
 
+    public ItemStack getContainerItem()
+    {
+        if (this.capability == null)
+        {
+            this.capability = this.player.getCapability(TravelersBackpackCapability.TRAVELERS_BACKPACK_CAPABILITY);
+        }
+        AtomicReference<ItemStack> result = new AtomicReference<>(ItemStack.EMPTY);
+        this.capability.ifPresent(c -> { result.set(c.getWearable()); } );
+        return result.get();
+    }
+
     public ItemStack getFirst()
     {
         if (this.capability == null)
