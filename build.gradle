@@ -3,7 +3,7 @@ plugins {
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
-    id 'net.neoforged.moddev' version '0.1.112'
+    id 'net.neoforged.moddev' version '1.0.17'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -136,8 +136,8 @@ dependencies {
     implementation "curse.maven:jade-324717:5444008"
     compileOnly "curse.maven:the-one-probe-245211:5431197"
 
-    implementation "curse.maven:jei-238222:5466551"
-    compileOnly "curse.maven:emi-580555:5436759"
+    compileOnly "curse.maven:jei-238222:5466551"
+    implementation "curse.maven:emi-580555:5436759"
     compileOnly "curse.maven:roughly-enough-items-310111:5435024"
 	//runtimeOnly "curse.maven:architectury-api-419699:5424664"
 	compileOnly "curse.maven:cloth-config-348521:5424576"
@@ -148,14 +148,15 @@ dependencies {
 	
     implementation "curse.maven:polymorph-388800:5480541"
 	
-	// curios is not put for 1.21 yet, using 1.20.6
-	compileOnly "curse.maven:curios-309927:5443145"
-
     compileOnly "curse.maven:dynamic-asset-generator-577096:5471770"
     //implementation "curse.maven:dynamic-asset-generator-577096:5471770"
     runtimeOnly "curse.maven:biomes-o-plenty-220318:5476207"
     runtimeOnly "curse.maven:terrablender-neoforge-940057:5429865"
     runtimeOnly "curse.maven:glitchcore-955399:5429863"
+	
+	implementation "curse.maven:inventory-tweaks-refoxed-976858:5610776"
+	implementation "curse.maven:adorned-1036809:5684431"
+    implementation "curse.maven:travelers-backpack-321117:5602831"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
