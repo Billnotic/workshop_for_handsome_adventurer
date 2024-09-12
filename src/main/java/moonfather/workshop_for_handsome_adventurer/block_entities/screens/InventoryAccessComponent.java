@@ -9,6 +9,7 @@ import moonfather.workshop_for_handsome_adventurer.block_entities.SimpleTableMen
 import moonfather.workshop_for_handsome_adventurer.block_entities.messaging.PacketSender;
 import moonfather.workshop_for_handsome_adventurer.block_entities.screen_components.SimpleButton;
 import moonfather.workshop_for_handsome_adventurer.block_entities.screen_components.SlightlyNicerEditBox;
+import moonfather.workshop_for_handsome_adventurer.initialization.Registration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -145,10 +146,12 @@ public class InventoryAccessComponent implements Renderable, GuiEventListener, N
             }
             this.renameButton.setTooltipInset(button.itemMain.getHoverName());
             this.renameBox.setValue("");
-            boolean canRenameContainer = (button.itemMain.getCount() & 4) == 0;
+            Integer flagsBoxed = button.itemMain.get(Registration.TAB_FLAGS.get());
+            int flags = flagsBoxed != null ? flagsBoxed : 1;
+            boolean canRenameContainer = (flags & 4) == 0;
             this.renameBox.visible = canRenameContainer;
             this.renameButton.visible = canRenameContainer;
-            this.slotRowsFourToSixVisible = (button.itemMain.getCount() & 2) == 2;
+            this.slotRowsFourToSixVisible = (flags & 2) == 2;
             return true;
         }
         return false;

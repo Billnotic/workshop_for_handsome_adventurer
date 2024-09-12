@@ -153,8 +153,8 @@ dependencies {
     runtimeOnly "curse.maven:biomes-o-plenty-220318:5476207"
     runtimeOnly "curse.maven:terrablender-neoforge-940057:5429865"
     runtimeOnly "curse.maven:glitchcore-955399:5429863"
-	
-	implementation "curse.maven:inventory-tweaks-refoxed-976858:5610776"
+
+    compileOnly "curse.maven:inventory-tweaks-refoxed-976858:5610776"
 	implementation "curse.maven:adorned-1036809:5684431"
     implementation "curse.maven:travelers-backpack-321117:5602831"
 }

@@ -2,8 +2,10 @@ package moonfather.workshop_for_handsome_adventurer.block_entities;
 
 import moonfather.workshop_for_handsome_adventurer.block_entities.container_translators.TetraBeltTranslator;
 import moonfather.workshop_for_handsome_adventurer.blocks.AdvancedTableBottomPrimary;
+import moonfather.workshop_for_handsome_adventurer.initialization.Registration;
 import moonfather.workshop_for_handsome_adventurer.integration.CuriosAccessor;
 import moonfather.workshop_for_handsome_adventurer.integration.TetraBeltSupport;
+import moonfather.workshop_for_handsome_adventurer.integration.TravelersBackpack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -14,6 +16,7 @@ import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.DirectionalBlock;
@@ -217,6 +220,7 @@ public class InventoryAccessHelper
                 record.VisibleSlotCount = (size / 8 * 9) <= 27 ? 27 : 54;
                 record.ItemFirst = TetraBeltSupport.getToolbeltStorageFirst(beltSearch);
                 record.Index = this.adjacentInventories.size();
+                record.ModId = "tetra";
                 this.adjacentInventories.add(record);
             }
         }
@@ -238,9 +242,53 @@ public class InventoryAccessHelper
                 record.ItemFirst = ItemStack.EMPTY;
                 record.Index = this.adjacentInventories.size();
                 this.adjacentInventories.add(record);
+                record.ModId = "";
+                continue;
+            }
+            // what about ComponentItemHandler?
+            //
+            // now for DataComponents.CONTAINER... blindly typing this. no idea what to test on.
+            ItemContainerContents container = maybeStorageItem.get(DataComponents.CONTAINER);
+            if (container != null)
+            {
+                InventoryAccessRecord record = new InventoryAccessRecord();
+                record.ItemChest = maybeStorageItem.copy();
+                record.ItemChest.remove(DataComponents.CONTAINER);
+                record.Nameable = true;
+                record.Name = record.ItemChest.getHoverName();
+                record.Type = slotName;
+                record.VisibleSlotCount = itemHandler.getSlots() <= 27 ? 27 : 54;
+                record.ItemFirst = ItemStack.EMPTY;
+                record.Index = this.adjacentInventories.size();
+                this.adjacentInventories.add(record);
             }
         }
-        // todo: does the thing above work for ComponentItemHandler ?
+        // traveler's backpack. not sure why i support this.
+        if (ModList.get().isLoaded("travelersbackpack"))
+        {
+            if (TravelersBackpack.isPresent(player) && TravelersBackpack.slotCount(player) <= 54)
+            {
+                ItemStack icon = TravelersBackpack.getTabIcon(player);
+                if (! icon.isEmpty())  // when empty, player still has capability but backpack is somewhere on the ground
+                {
+                    InventoryAccessRecord record = new InventoryAccessRecord();
+                    record.ItemChest = icon;
+                    record.Nameable = true;
+                    record.Name = record.ItemChest.getHoverName();
+                    record.Type = RecordTypes.FLOATING;
+                    record.VisibleSlotCount = TravelersBackpack.slotCount(player) <= 27 ? 27 : 54;
+                    record.ItemFirst = TravelersBackpack.getFirst(player);
+                    record.Index = this.adjacentInventories.size();
+                    record.ModId = "travelersbackpack";
+                    this.adjacentInventories.add(record);
+                }
+            }
+        }
+        // mr crayfish' backpack
+        if (ModList.get().isLoaded("backpacked"))
+        {
+            // todo: not out yet
+        }
     }
 
     private void loadAdjacentInventoriesCore(Level level, BlockPos pos, Player player, int range)
@@ -270,6 +318,7 @@ public class InventoryAccessHelper
                             continue; //locked
                         }
                         InventoryAccessRecord record = new InventoryAccessRecord();
+                        record.ModId = "";
                         record.ItemChest = be.getBlockState().getBlock().asItem().getDefaultInstance();
                         if (record.ItemChest.isEmpty())
                         {
@@ -312,6 +361,7 @@ public class InventoryAccessHelper
     }
 
 
+
     private boolean isInRange(int dx, int dz, int range)
     {
         if (dx == 0 && dz == 0)
@@ -327,6 +377,7 @@ public class InventoryAccessHelper
     public int chosenContainerTrueSize = 0, chosenContainerVisibleSize = 0;
     private BlockPos chestPrimaryPos;
     public BlockEntity chosenContainerForRename = null;
+    public ItemStack chosenContainerItem = null; // for rename
 
 
     public void putInventoriesIntoAContainerForTransferToClient(Container tabElements, int max)
@@ -341,14 +392,17 @@ public class InventoryAccessHelper
             InventoryAccessHelper.InventoryAccessRecord current = this.adjacentInventories.get(i);
             ItemStack chest = current.ItemChest.copy();
             chest.set(DataComponents.CUSTOM_NAME, current.Name);
+            int flags = 1; // 1 is unused but default
             if (current.VisibleSlotCount > 27)
             {
-                chest.setCount(2);
+                flags |= 2;
+
             }
-            if (!current.Nameable)
+            if (! current.Nameable)
             {
-                chest.setCount(chest.getCount() | 4);
+                flags |= 4;
             }
+            chest.set(Registration.TAB_FLAGS.get(), flags);
             ItemStack suff = current.ItemFirst.copy();
             tabElements.setItem(i * 2, chest);
             tabElements.setItem(i * 2 + 1, suff);
@@ -363,9 +417,11 @@ public class InventoryAccessHelper
     }
 
 
+
     public boolean tryInitializeInventoryAccess(Level level, Player player, int index)
     {
         this.chosenContainerTrueSize = 0; this.chosenContainer = null;
+        this.chosenContainerItem = null;
         if (this.adjacentInventories == null || this.adjacentInventories.size() <= index)
         {
             return false;
@@ -387,6 +443,7 @@ public class InventoryAccessHelper
             }
             this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper(new TetraBeltTranslator(belt));
             this.chosenContainerTrueSize = belt.getContainerSize() / TetraBeltTranslator.GetRowWidth(belt) * 9;
+            this.chosenContainerItem = (ItemStack) TetraBeltSupport.findToolbelt(player);
             this.currentType = RecordTypes.TOOLBELT;
             return true;
         }
@@ -398,13 +455,37 @@ public class InventoryAccessHelper
             {
                 this.chosenContainer = new SimpleTableMenu.VariableSizeItemStackHandlerWrapper(itemHandler);
                 this.chosenContainerTrueSize = itemHandler.getSlots();
+                this.chosenContainerItem = item;
                 this.currentType = record.Type;
             }
             return this.chosenContainerTrueSize > 0;
         }
         else if (record.Type.equals(RecordTypes.FLOATING))
         {
-            // traveller's backpack. this should be in an addon.
+            if (ModList.get().isLoaded("travelersbackpack") && record.ModId.equals("travelersbackpack"))     // add other containers attached to player here
+            {
+                // traveller's backpack. this should be in an addon.
+                if (TravelersBackpack.isPresent(player) && TravelersBackpack.slotCount(player) <= 54)
+                {
+                    this.chosenContainer = new SimpleTableMenu.VariableSizeItemStackHandlerWrapper(TravelersBackpack.getItems(player));
+                    this.chosenContainerTrueSize = TravelersBackpack.slotCount(player);
+                    this.chosenContainerItem = TravelersBackpack.getContainerItem(player);
+                    this.currentType = RecordTypes.FLOATING;
+                    return true;
+                }
+            }
+            if (ModList.get().isLoaded("backpacked") && record.ModId.equals("backpacked"))
+            {
+//            // mr crayfish's backpack.
+//            if (BackpackedBackpack.isPresent(player))
+//            {
+//                this.chosenContainer = BackpackedBackpack.getContainer(player);
+//                this.chosenContainerTrueSize = BackpackedBackpack.slotCount(player);
+//                this.chosenContainerItem = BackpackedBackpack.getContainerItem(player);
+//                this.currentType = record.Type;
+//                return true;
+//            }
+            }
             return false;
         }
         else
@@ -527,6 +608,7 @@ public class InventoryAccessHelper
         public boolean Nameable = false;
         public String Type = "";
         public int VisibleSlotCount = 3;
+        public String ModId = "";
     }
 
     static class RecordTypes

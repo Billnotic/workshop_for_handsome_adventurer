@@ -10,8 +10,10 @@ import moonfather.workshop_for_handsome_adventurer.other.CreativeTab;
 import moonfather.workshop_for_handsome_adventurer.other.OptionalRecipeCondition;
 import moonfather.workshop_for_handsome_adventurer.other.UnsupportedWoodRecipe;
 import moonfather.workshop_for_handsome_adventurer.items.WorkstationPlacerItem;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -22,6 +24,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.conditions.ICondition;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
@@ -39,6 +42,7 @@ public class Registration
 	private static final DeferredRegister<RecipeSerializer<?>> RECIPES = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, Constants.MODID);
 	private static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Constants.MODID);
 	private static final DeferredRegister<MapCodec<? extends ICondition>> CONDITIONS = DeferredRegister.create(NeoForgeRegistries.Keys.CONDITION_CODECS, Constants.MODID);
+	private static final DeferredRegister.DataComponents DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(Constants.MODID);
 
 	public static void init(IEventBus modBus)
 	{
@@ -49,6 +53,7 @@ public class Registration
 		RECIPES.register(modBus);
 		CREATIVE_TABS.register(modBus);
 		CONDITIONS.register(modBus);
+		DATA_COMPONENT_TYPES.register(modBus);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,10 +78,11 @@ public class Registration
 	public static final List<String> woodTypes = List.of("oak", "spruce", "jungle", "birch", "dark_oak", "mangrove", "cherry");
 
 	// static initialization
-	static {
+	static
+	{
 		String id;
 		// small tables
-		for (String woodType: Registration.woodTypes)
+		for (String woodType : Registration.woodTypes)
 		{
 			id = "simple_table_" + woodType;
 			Supplier<Block> block = BLOCKS.register(id, () -> new SimpleTable());
@@ -84,7 +90,7 @@ public class Registration
 			items_table1.add(FromBlock(block, id));
 		}
 		// dual tables
-		for (String woodType: Registration.woodTypes)
+		for (String woodType : Registration.woodTypes)
 		{
 			Supplier<Block> primary = BLOCKS.register("dual_table_bottom_left_" + woodType, () -> new AdvancedTableBottomPrimary());
 			BLOCKS.register("dual_table_bottom_right_" + woodType, () -> new AdvancedTableBottomSecondary());
@@ -95,7 +101,7 @@ public class Registration
 			blocks_table2.add(primary);
 		}
 		// toolracks
-		for (String woodType: Registration.woodTypes)
+		for (String woodType : Registration.woodTypes)
 		{
 			Supplier<Block> rack;
 			id = "tool_rack_single_" + woodType;
@@ -108,7 +114,7 @@ public class Registration
 			blocks_rack.add(rack);
 			id = "tool_rack_pframed_" + woodType;
 			rack = BLOCKS.register(id, () -> DualToolRack.create(6, "pframed"));
-			items_rack3.add(FromBlock(rack,id));
+			items_rack3.add(FromBlock(rack, id));
 			blocks_rack.add(rack);
 			id = "tool_rack_double_" + woodType;
 			rack = BLOCKS.register(id, () -> DualToolRack.create(6, "double"));
@@ -116,7 +122,7 @@ public class Registration
 			blocks_rack.add(rack);
 		}
 		// potion shelves
-		for (String woodType: Registration.woodTypes)
+		for (String woodType : Registration.woodTypes)
 		{
 			id = "potion_shelf_" + woodType;
 			Supplier<Block> shelf = BLOCKS.register(id, () -> new PotionShelf());
@@ -124,7 +130,7 @@ public class Registration
 			blocks_pshelf.add(shelf);
 		}
 		// book shelves
-		for (String woodType: Registration.woodTypes)
+		for (String woodType : Registration.woodTypes)
 		{
 			Supplier<Block> rack;
 			id = "book_shelf_double_" + woodType;
@@ -149,7 +155,6 @@ public class Registration
 			blocks_bshelf.add(rack);
 		}
 	}
-
 
 	private static Supplier<Item> FromBlock(Supplier<Block> block, String id)
 	{
@@ -179,9 +184,13 @@ public class Registration
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public static final Supplier<RecipeSerializer<UnsupportedWoodRecipe>> TABLE_RECIPE = RECIPES.register("table_recipe_unknown_planks", ()-> new SimpleCraftingRecipeSerializer<UnsupportedWoodRecipe>(UnsupportedWoodRecipe::new));
+	public static final Supplier<RecipeSerializer<UnsupportedWoodRecipe>> TABLE_RECIPE = RECIPES.register("table_recipe_unknown_planks", () -> new SimpleCraftingRecipeSerializer<UnsupportedWoodRecipe>(UnsupportedWoodRecipe::new));
 
 	public static final Supplier<CreativeModeTab> CREATIVE_TAB = CREATIVE_TABS.register("tab", CreativeTab::buildTab);
 
 	public static final Supplier<MapCodec<? extends ICondition>> OptionalRecipe = CONDITIONS.register("optional", () -> OptionalRecipeCondition.CODEC);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> TAB_FLAGS = DATA_COMPONENT_TYPES.register("tab_flags", () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.INT).build() );
 }

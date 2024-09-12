@@ -704,17 +704,10 @@ public class SimpleTableMenu extends AbstractContainerMenu
 				}
 			}
 		}
-		else if (this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.TOOLBELT))
+		else if (this.inventoryAccessHelper.chosenContainerItem != null)
 		{
-			ItemStack s = (ItemStack) TetraBeltSupport.findToolbelt(player);
-			s.set(DataComponents.CUSTOM_NAME, Component.literal(newName));
-			player.giveExperienceLevels(-1);
-		}
-		else if (this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.LEGGINGS) || this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.CHESTSLOT)
-				|| this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.BACKSLOT) || this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.FLOATING))
-		{
-			ItemStack s = InventoryAccessHelper.getItemFromNamedSlot(player, this.inventoryAccessHelper.currentType);
-			s.set(DataComponents.CUSTOM_NAME, Component.literal(newName));
+			// RecordTypes.TOOLBELT, RecordTypes.LEGGINGS..., RecordTypes.FLOATING
+			this.inventoryAccessHelper.chosenContainerItem.set(DataComponents.CUSTOM_NAME, Component.literal(newName));
 			player.giveExperienceLevels(-1);
 		}
 	}
