@@ -183,6 +183,8 @@ dependencies {
 
     //runtimeOnly fg.deobf("curse.maven:immersive-engineering-231951:4535935")
 	implementation fg.deobf("curse.maven:polymorph-388800:5222155")
+	implementation fg.deobf("curse.maven:backpacked-352835:4725664")
+	implementation fg.deobf("curse.maven:lets-do-camping-1072398:5652325")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
