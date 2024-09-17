@@ -36,7 +36,7 @@ minecraft {
     // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
-            workingDirectory project.file('../run')
+            workingDirectory project.file('../run1192')
 
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.
@@ -61,7 +61,7 @@ minecraft {
         }
 
         server {
-            workingDirectory project.file('../run')
+            workingDirectory project.file('../run1192')
 
             property 'forge.logging.markers', 'REGISTRIES'
 
@@ -184,7 +184,7 @@ dependencies {
     //runtimeOnly fg.deobf("curse.maven:immersive-engineering-231951:4535935")
 	implementation fg.deobf("curse.maven:polymorph-388800:5222155")
 	implementation fg.deobf("curse.maven:backpacked-352835:4725664")
-	implementation fg.deobf("curse.maven:lets-do-camping-1072398:5652325")
+	//implementation fg.deobf("curse.maven:lets-do-camping-1072398:5652325")
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
