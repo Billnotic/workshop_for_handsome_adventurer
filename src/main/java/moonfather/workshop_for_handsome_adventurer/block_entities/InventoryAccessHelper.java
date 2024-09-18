@@ -3,6 +3,7 @@ package moonfather.workshop_for_handsome_adventurer.block_entities;
 import moonfather.workshop_for_handsome_adventurer.block_entities.container_translators.StorageDrawersSimpleTranslator;
 import moonfather.workshop_for_handsome_adventurer.block_entities.container_translators.TetraBeltTranslator;
 import moonfather.workshop_for_handsome_adventurer.blocks.AdvancedTableBottomPrimary;
+import moonfather.workshop_for_handsome_adventurer.integration.BackpackedBackpack;
 import moonfather.workshop_for_handsome_adventurer.integration.CuriosAccessor;
 import moonfather.workshop_for_handsome_adventurer.integration.TetraBeltSupport;
 import net.minecraft.core.BlockPos;
@@ -209,6 +210,23 @@ public class InventoryAccessHelper
                 this.adjacentInventories.add(record);
             });
         }
+        // mr crayfish' backpack
+        if (ModList.get().isLoaded("backpacked"))
+        {
+            if (BackpackedBackpack.isPresent(player) && BackpackedBackpack.slotCount(player) <= 54)
+            {
+                InventoryAccessRecord record = new InventoryAccessRecord();
+                record.ItemChest = BackpackedBackpack.getTabIcon(player);
+                record.Nameable = true;
+                record.Name = record.ItemChest.getHoverName();
+                record.Type = RecordTypes.FLOATING;
+                record.VisibleSlotCount = BackpackedBackpack.slotCount(player) <= 27 ? 27 : 54;
+                record.ItemFirst = BackpackedBackpack.getFirst(player);
+                record.Index = this.adjacentInventories.size();
+                record.ModId = "backpacked";
+                this.adjacentInventories.add(record);
+            }
+        }
     }
 
     private void loadAdjacentInventoriesCore(Level level, BlockPos pos, Player player, int range)
@@ -282,6 +300,7 @@ public class InventoryAccessHelper
     public int chosenContainerTrueSize = 0, chosenContainerVisibleSize = 0;
     private BlockPos chestPrimaryPos;
     public BlockEntity chosenContainerForRename = null;
+    public ItemStack chosenContainerItem = null; // for rename
 
 
     public void putInventoriesIntoAContainerForTransferToClient(Container tabElements, int max)
@@ -312,6 +331,7 @@ public class InventoryAccessHelper
 
     public boolean tryInitializeInventoryAccess(Level level, Player player, int index) {
         this.chosenContainerTrueSize = 0;   this.chosenContainer = null;
+        this.chosenContainerItem = null;
         if (this.adjacentInventories == null || this.adjacentInventories.size() <= index)
         {
             return false;
@@ -328,6 +348,8 @@ public class InventoryAccessHelper
             if (belt == null) { return false; }
             this.chosenContainer = new SimpleTableMenu.VariableSizeContainerWrapper(new TetraBeltTranslator(belt));
             this.chosenContainerTrueSize = belt.getContainerSize() / TetraBeltTranslator.GetRowWidth(belt) * 9;
+            this.chosenContainerVisibleSize = this.chosenContainerTrueSize <= 27 ? 27 : 54;
+            this.chosenContainerItem = (ItemStack) TetraBeltSupport.findToolbelt(player);
             this.currentType = RecordTypes.TOOLBELT;
             return true;
         }
@@ -337,9 +359,26 @@ public class InventoryAccessHelper
             pockets.ifPresent(inventory -> {
                 this.chosenContainer = new SimpleTableMenu.VariableSizeItemStackHandlerWrapper(inventory);
                 this.chosenContainerTrueSize = inventory.getSlots();
+                this.chosenContainerItem = item;
                 this.currentType = record.Type;
             });
             return this.chosenContainerTrueSize > 0;
+        }
+        else if (record.Type.equals(RecordTypes.FLOATING))
+        {
+            // mr crayfish's backpack.
+            if (ModList.get().isLoaded("backpacked") && record.ModId.equals("backpacked"))
+            {
+                if (BackpackedBackpack.isPresent(player))
+                {
+                    this.chosenContainer = BackpackedBackpack.getContainer(player);
+                    this.chosenContainerTrueSize = BackpackedBackpack.slotCount(player);
+                    this.chosenContainerItem = BackpackedBackpack.getContainerItem(player);
+                    this.currentType = record.Type;
+                    return true;
+                }
+            }
+            return false;
         }
         else {
             return false;
@@ -432,6 +471,7 @@ public class InventoryAccessHelper
         public boolean Nameable = false;
         public String Type = "";
         public int VisibleSlotCount = 3;
+        public String ModId = "";
     }
 
     static class RecordTypes
@@ -441,6 +481,7 @@ public class InventoryAccessHelper
         public static final String LEGGINGS = "leggings_item";
         public static final String CHESTSLOT = "chest_item";
         public static final String BACKSLOT = "back_item";
+        public static final String FLOATING = "floating";
         public static final String[] NAMED_SLOTS = { LEGGINGS, CHESTSLOT, BACKSLOT };
     }
 }

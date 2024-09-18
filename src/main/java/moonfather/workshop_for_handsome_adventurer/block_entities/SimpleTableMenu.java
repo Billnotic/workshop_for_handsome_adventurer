@@ -700,17 +700,11 @@ public class SimpleTableMenu extends AbstractContainerMenu
 				}
 			}
 		}
-		else if (this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.TOOLBELT))
+		else if (this.inventoryAccessHelper.chosenContainerItem != null)
 		{
-			ItemStack s = (ItemStack) TetraBeltSupport.findToolbelt(player);
-			s.setHoverName(new TextComponent(newName));
-			player.giveExperienceLevels(-1);
-		}
-		else if (this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.LEGGINGS) || this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.CHESTSLOT) || this.inventoryAccessHelper.currentType.equals(InventoryAccessHelper.RecordTypes.BACKSLOT))
-		{
-			ItemStack s = InventoryAccessHelper.getItemFromNamedSlot(player, this.inventoryAccessHelper.currentType);
-			s.setHoverName(new TextComponent(newName));
-			player.giveExperienceLevels(-1);
+			// RecordTypes.TOOLBELT, RecordTypes.LEGGINGS..., RecordTypes.FLOATING
+            this.inventoryAccessHelper.chosenContainerItem.setHoverName(new TextComponent(newName));
+            player.giveExperienceLevels(-1);
 		}
 	}
 
