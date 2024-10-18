@@ -49,10 +49,10 @@ public class AdvancedTableBottomPrimary extends DualTableBaseBlock implements En
 	/////////////////////////////////////////////////////////////////////////
 
 	private static final VoxelShape SHAPE_TOP = Block.box(0.0D, 12.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-	private static final VoxelShape SHAPE_LEG1 = Block.box(1.0D, 0.0D, 1.0D, 4.0D, 12.0D, 4.0D);
-	private static final VoxelShape SHAPE_LEG3 = Block.box(1.0D, 0.0D, 12.0D, 4.0D, 12.0D, 15.0D);
-	private static final VoxelShape SHAPE_LEG2 = Block.box(12.0D, 0.0D, 1.0D, 15.0D, 12.0D, 4.0D);
-	private static final VoxelShape SHAPE_LEG4 = Block.box(12.0D, 0.0D, 12.0D, 15.0D, 12.0D, 15.0D);
+	private static final VoxelShape SHAPE_LEG1 = Block.box(0.0D, 0.0D, 0.0D, 4.0D, 12.0D, 4.0D);
+	private static final VoxelShape SHAPE_LEG3 = Block.box(0.0D, 0.0D, 12.0D, 4.0D, 12.0D, 16.0D);
+	private static final VoxelShape SHAPE_LEG2 = Block.box(12.0D, 0.0D, 0.0D, 16.0D, 12.0D, 4.0D);
+	private static final VoxelShape SHAPE_LEG4 = Block.box(12.0D, 0.0D, 12.0D, 16.0D, 12.0D, 16.0D);
 	private static final VoxelShape SHAPE_TABLE_S = Shapes.or(SHAPE_TOP, SHAPE_LEG1, SHAPE_LEG3);
 	private static final VoxelShape SHAPE_TABLE_W = Shapes.or(SHAPE_TOP, SHAPE_LEG1, SHAPE_LEG2);
 	private static final VoxelShape SHAPE_TABLE_N = Shapes.or(SHAPE_TOP, SHAPE_LEG2, SHAPE_LEG4);

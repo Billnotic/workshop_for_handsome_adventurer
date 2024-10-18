@@ -30,10 +30,10 @@ public class AdvancedTableTopSecondary extends DualTableBaseBlock
 				.setValue(AdvancedTableBottomPrimary.LIGHTS_ON, false));
 	}
 
-	private static final VoxelShape SHAPE_WALL_S = Block.box( 0.0D, 0.0D,  0.0D, 16.0D, 8.0D, 3.0D);
-	private static final VoxelShape SHAPE_WALL_W = Block.box(13.0D, 0.0D,  0.0D, 16.0D, 8.0D, 16.0D);
-	private static final VoxelShape SHAPE_WALL_N = Block.box( 0.0D, 0.0D, 13.0D, 16.0D, 8.0D, 16.0D);
-	private static final VoxelShape SHAPE_WALL_E = Block.box( 0.0D, 0.0D,  0.0D,  3.0D, 8.0D, 16.0D);
+	private static final VoxelShape SHAPE_WALL_S = Block.box( 0.0D, 0.0D,  0.0D, 16.0D, 8.0D, 4.0D);
+	private static final VoxelShape SHAPE_WALL_W = Block.box(12.0D, 0.0D,  0.0D, 16.0D, 8.0D, 16.0D);
+	private static final VoxelShape SHAPE_WALL_N = Block.box( 0.0D, 0.0D, 12.0D, 16.0D, 8.0D, 16.0D);
+	private static final VoxelShape SHAPE_WALL_E = Block.box( 0.0D, 0.0D,  0.0D,  4.0D, 8.0D, 16.0D);
 	private static final VoxelShape SHAPE_WALL_AND_LAMP_S = Block.box( 0.0D,  0.01D,  0.0D, 16.0D, 16.0D, 3.0D);
 	private static final VoxelShape SHAPE_WALL_AND_LAMP_W = Block.box(13.0D, 0.01D,  0.0D, 16.0D, 16.0D, 16.0D);
 	private static final VoxelShape SHAPE_WALL_AND_LAMP_N = Block.box( 0.0D, 0.01D, 13.0D, 16.0D, 16.0D, 16.0D);
