@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"plank": "minecraft:block/oak_planks",
-		"particle": "minecraft:block/oak_planks"
+		"particle": "block/oak_planks",
+		"plank": "block/oak_planks"
 	},
 	"elements": [
 		{
@@ -33,11 +33,11 @@
 		},
 		{
 			"name": "hor2",
-			"from": [1, 7.5, 1],
-			"to": [15, 8.5, 7],
+			"from": [1, 8, 1],
+			"to": [15, 9, 7],
 			"faces": {
 				"south": {"uv": [1, 2, 15, 3], "texture": "#plank"},
-				"up": {"uv": [0, 0, 14, 7], "texture": "#plank"},
+				"up": {"uv": [0, 0, 14, 6], "texture": "#plank"},
 				"down": {"uv": [0, 8, 14, 15], "texture": "#plank"}
 			}
 		},
@@ -47,7 +47,7 @@
 			"to": [15, 16, 7],
 			"faces": {
 				"south": {"uv": [1, 2, 15, 3], "texture": "#plank"},
-				"up": {"uv": [0, 0, 14, 7], "texture": "#plank"},
+				"up": {"uv": [0, 0, 14, 6], "texture": "#plank"},
 				"down": {"uv": [0, 8, 14, 15], "texture": "#plank"}
 			}
 		},
@@ -90,7 +90,7 @@
 		"gui": {
 			"rotation": [30, 45, 0],
 			"translation": [3, -3, 0],
-			"scale": [0.90, 0.65, 0.90]
+			"scale": [0.9, 0.65, 0.9]
 		},
 		"head": {
 			"rotation": [90, 0, 0]

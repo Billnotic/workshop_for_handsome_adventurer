@@ -6,26 +6,26 @@
 	"elements": [
 		{
 			"name": "slot2book_f",
-			"from": [4.5, 1, 4],
-			"to": [8, 6, 6],
+			"from": [4, 1, 4],
+			"to": [7, 7, 6],
 			"faces": {
-				"east": {"uv": [7, 0, 9, 6], "texture": "#book1"},
-				"south": {"uv": [4, 0, 7, 6], "texture": "#book1"},
-				"west": {"uv": [2, 0, 4, 6], "texture": "#book1"},
-				"up": {"uv": [12, 0, 16, 8], "rotation": 90, "texture": "#book1"},
-				"down": {"uv": [12, 0, 16, 8], "rotation": 270, "texture": "#book1"}
+				"east": {"uv": [8, 0, 10, 6], "texture": "#book1"},
+				"south": {"uv": [5, 0, 8, 6], "texture": "#book1"},
+				"west": {"uv": [3, 0, 5, 6], "texture": "#book1"},
+				"up": {"uv": [13, 0, 15, 3], "rotation": 90, "texture": "#book1"},
+				"down": {"uv": [13, 0, 15, 3], "rotation": 270, "texture": "#book1"}
 			}
 		},
 		{
 			"name": "slot2book_b",
-			"from": [4.5, 1, 1],
-			"to": [8, 6, 4],
+			"from": [4, 1, 1],
+			"to": [7, 7, 4],
 			"faces": {
-				"north": {"uv": [12, 0, 13, 8], "rotation": 90, "texture": "#book1"},
-				"east": {"uv": [9, 0, 12, 6], "texture": "#book1"},
+				"north": {"uv": [13, 0, 14, 3], "rotation": 90, "texture": "#book1"},
+				"east": {"uv": [10, 0, 13, 6], "texture": "#book1"},
 				"west": {"uv": [0, 0, 3, 6], "texture": "#book1"},
-				"up": {"uv": [12, 0, 13, 8], "rotation": 90, "texture": "#book1"},
-				"down": {"uv": [12, 0, 13, 8], "rotation": 90, "texture": "#book1"}
+				"up": {"uv": [13, 0, 14, 3], "rotation": 90, "texture": "#book1"},
+				"down": {"uv": [13, 0, 14, 3], "rotation": 90, "texture": "#book1"}
 			}
 		}
 	]
