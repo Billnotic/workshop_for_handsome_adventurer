@@ -38,13 +38,16 @@ public class OurClientPack extends BaseResourcePack
                     String replaced = json
                         .replace(SPRUCE_PLANKS, getPlanks(wood))
                         .replace(SPRUCE_LOG, getStrippedLog(wood))
-                        .replace(SPRUCE, wood);
+                        //used to be a simple .replace(SPRUCE, wood), now it uses replaceInsensitive
+                    ;
+                    replaced=replaceInsensitive(replaced,SPRUCE,wood);
                     if (WoodTypeManager.isUsingDarkerWorkstation(wood))
                     {
                         replaced = replaced.replace("/stripped_dark_oak_log", "/stripped_spruce_log");
                     }
                     String namespace = spruceFile.contains("tetra") ? "tetra_tables" : Constants.MODID;
-                    cache.put(new ResourceLocation(namespace, spruceFile.replace(SPRUCE, wood)), replaced);
+                    //cache.put(new ResourceLocation(namespace, spruceFile.replace(SPRUCE, wood)), replaced);
+                    cache.put(new ResourceLocation(namespace, replaceInsensitive(spruceFile,SPRUCE,wood)), replaced);
                 }
             }
         }
@@ -80,12 +83,13 @@ public class OurClientPack extends BaseResourcePack
                             String replacement;
                             if (! wood.contains("_"))  // also, we don't want specials (sx_wood) in this branch
                             {
-                                replacement = line.replace(SPRUCE, wood);
+                                replacement = replaceInsensitive(line,SPRUCE,wood);
                             }
                             else
                             {
                                 String[] temp = line.split(":", 2);  // translation is difficult. this replace call is a trivial version.
                                 replacement = temp[0].replace(SPRUCE, wood) + ':' + temp[1].replace(SPRUCE, CustomTripletSupport.stripPrefix(wood).replace('_', ' '));
+                                replacement=replaceInsensitive(replacement,SPRUCE, wood);
                             }
                             builder.append(replacement);
                         }
@@ -323,4 +327,30 @@ public class OurClientPack extends BaseResourcePack
 
     @Override
     public String packId() { return "Workshop - auto-generated client assets"; }
+    private String replaceInsensitive(String origin, String target, String replacement) {
+        String[] words = target.split(" ");
+        StringBuilder capitalized = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                String capitalizedWord = Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
+                capitalized.append(capitalizedWord).append(" ");
+            }
+        }
+        String capTarget = capitalized.toString().trim();
+        words = replacement.split(" ");
+        capitalized = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                String capitalizedWord = Character.toUpperCase(word.charAt(0)) + word.substring(1).toLowerCase();
+                capitalized.append(capitalizedWord).append(" ");
+            }
+        }
+        String capReplacement = capitalized.toString().trim();
+        String fullCapTarget = target.toUpperCase();
+        String fullCapReplacement = replacement.toUpperCase();
+        origin=origin.replace(target,replacement);
+        origin=origin.replace(capTarget,capReplacement);
+        origin=origin.replace(fullCapTarget,fullCapReplacement);
+        return(origin);
+    }
 }
