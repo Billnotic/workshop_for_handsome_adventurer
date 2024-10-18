@@ -63,8 +63,8 @@
         },
         {
             "name": "Leg1",
-            "from": [ 0, 0, 0 ], 
-            "to": [ 3.5, 12, 3.5 ], 
+            "from": [ 0, 0, 0 ],
+            "to": [ 5, 12, 5 ],
             "faces": {
                 "north": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
                 "east": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
@@ -75,8 +75,8 @@
         },
         {
             "name": "Leg2",
-            "from": [ 12.5, 0, 0 ], 
-            "to": [ 16, 12, 3.5 ], 
+            "from": [ 11, 0, 0 ],
+            "to": [ 16, 12, 5 ],
             "faces": {
                 "north": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
                 "east": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
@@ -87,8 +87,8 @@
         },
         {
             "name": "Leg3",
-            "from": [ 12.5, 0, 12.5 ], 
-            "to": [ 16, 12, 16 ], 
+            "from": [ 11, 0, 11 ],
+            "to": [ 16, 12, 16 ],
             "faces": {
                 "north": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
                 "east": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
@@ -99,8 +99,8 @@
         },
         {
             "name": "Leg4",
-            "from": [ 0, 0, 12.5 ], 
-            "to": [ 3.5, 12, 16 ], 
+            "from": [ 0, 0, 11 ],
+            "to": [ 5, 12, 16 ],
             "faces": {
                 "north": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },
                 "east": { "texture": "#oak_planks", "uv": [ 0, 7, 12, 12 ], "rotation": 90 },

@@ -304,6 +304,8 @@ public class OurClientPack extends BaseResourcePack
                     "models/item/workstation_placer_spruce.json",
                     "blockstates/tetra_table_spruce.json",
                     "models/block/tetra_table_spruce.json",
+                    "models/block/tetra_table_spruce_handsome.json",
+                    "models/block/tetra_table_spruce_default.json",
                     "models/item/tetra_table_spruce.json"
             };
 
