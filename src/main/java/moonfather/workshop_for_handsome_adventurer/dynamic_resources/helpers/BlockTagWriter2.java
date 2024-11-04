@@ -30,7 +30,7 @@ public class BlockTagWriter2
                 }
                 builder.append(template.formatted(Constants.MODID, file, wood));
             }
-            if (ModList.get().isLoaded("tetra_tables"))
+            if (ModList.get().isLoaded("tetra_tables")&&!ModList.get().isLoaded("everycomp"))
             {
                 builder.append(",\n").append(lineTetra).append(wood).append('"');
             }

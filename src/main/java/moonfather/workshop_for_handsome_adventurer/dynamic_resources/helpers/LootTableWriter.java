@@ -24,7 +24,7 @@ public class LootTableWriter
             }
         }
         // support for addon mod
-        if (ModList.get().isLoaded("tetra_tables"))
+        if (ModList.get().isLoaded("tetra_tables")&&!ModList.get().isLoaded("everycomp"))
         {
             for (String wood: WoodTypeLister.getWoodIds())
             {
